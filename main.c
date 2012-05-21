@@ -59,7 +59,7 @@ int main( int argc, char ** argv )
 
 	dcpu_create( &dcpu, mem );
 
-	for( int i = 0; i < 100; i++ )
+	while( !dcpu_complete( &dcpu ) )
 	{
 		dcpu_tick( &dcpu );
 		reg_debug( &dcpu );

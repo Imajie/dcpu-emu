@@ -58,6 +58,17 @@ void dcpu_free( dcpu16_t *dcpu )
  */
 void dcpu_tick( dcpu16_t *dcpu )
 {
-	dcpu->clocks += dcpu_do_inst( dcpu );
+	if( dcpu->state != HALTING )
+		dcpu->clocks += dcpu_do_inst( dcpu );
+}
+
+/*
+ * dcpu_complete
+ *
+ * Returns zero when SUB PC,1 has not be encountered, nonzero otherwise
+ */
+int dcpu_complete( dcpu16_t *dcpu )
+{
+	return dcpu->state == HALTING;
 }
 
