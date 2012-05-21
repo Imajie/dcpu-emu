@@ -20,6 +20,7 @@ int dcpu_mli( dcpu16_t *dcpu, dcpu_inst_t inst );
 int dcpu_div( dcpu16_t *dcpu, dcpu_inst_t inst );
 int dcpu_dvi( dcpu16_t *dcpu, dcpu_inst_t inst );
 int dcpu_mod( dcpu16_t *dcpu, dcpu_inst_t inst );
+int dcpu_mdi( dcpu16_t *dcpu, dcpu_inst_t inst );
 int dcpu_and( dcpu16_t *dcpu, dcpu_inst_t inst );
 int dcpu_bor( dcpu16_t *dcpu, dcpu_inst_t inst );
 int dcpu_xor( dcpu16_t *dcpu, dcpu_inst_t inst );
@@ -34,11 +35,17 @@ int dcpu_ifg( dcpu16_t *dcpu, dcpu_inst_t inst );
 int dcpu_ifa( dcpu16_t *dcpu, dcpu_inst_t inst );
 int dcpu_ifl( dcpu16_t *dcpu, dcpu_inst_t inst );
 int dcpu_ifu( dcpu16_t *dcpu, dcpu_inst_t inst );
+int dcpu_adx( dcpu16_t *dcpu, dcpu_inst_t inst );
+int dcpu_sbx( dcpu16_t *dcpu, dcpu_inst_t inst );
+int dcpu_sti( dcpu16_t *dcpu, dcpu_inst_t inst );
+int dcpu_std( dcpu16_t *dcpu, dcpu_inst_t inst );
 
 int dcpu_jsr( dcpu16_t *dcpu, dcpu_inst_t inst );
 int dcpu_int( dcpu16_t *dcpu, dcpu_inst_t inst );
-int dcpu_ing( dcpu16_t *dcpu, dcpu_inst_t inst );
-int dcpu_ins( dcpu16_t *dcpu, dcpu_inst_t inst );
+int dcpu_iag( dcpu16_t *dcpu, dcpu_inst_t inst );
+int dcpu_ias( dcpu16_t *dcpu, dcpu_inst_t inst );
+int dcpu_rfi( dcpu16_t *dcpu, dcpu_inst_t inst );
+int dcpu_iaq( dcpu16_t *dcpu, dcpu_inst_t inst );
 int dcpu_hwn( dcpu16_t *dcpu, dcpu_inst_t inst );
 int dcpu_hwq( dcpu16_t *dcpu, dcpu_inst_t inst );
 int dcpu_hwi( dcpu16_t *dcpu, dcpu_inst_t inst );
@@ -59,13 +66,13 @@ int (*dcpu_ops[])( dcpu16_t *dcpu, dcpu_inst_t inst ) =
 	dcpu_div,		/* 0x06 = DIV */
 	dcpu_dvi,		/* 0x07 = DVI */
 	dcpu_mod,		/* 0x08 = MOD */
-	dcpu_and,		/* 0x09 = AND */
-	dcpu_bor,		/* 0x0a = BOR */
-	dcpu_xor,		/* 0x0b = XOR */
-	dcpu_shr,		/* 0x0c = SHR */
-	dcpu_asr,		/* 0x0d = ASR */
-	dcpu_shl,		/* 0x0e = SHL */
-	dcpu_inval,		/* 0x0f = INVALID */
+	dcpu_mdi,		/* 0x09 = MDI */
+	dcpu_and,		/* 0x0a = AND */
+	dcpu_bor,		/* 0x0b = BOR */
+	dcpu_xor,		/* 0x0c = XOR */
+	dcpu_shr,		/* 0x0d = SHR */
+	dcpu_asr,		/* 0x0e = ASR */
+	dcpu_shl,		/* 0x0f = SHL */
 	dcpu_ifb,		/* 0x10 = IFB */
 	dcpu_ifc,		/* 0x11 = IFC */
 	dcpu_ife,		/* 0x12 = IFE */
@@ -76,12 +83,12 @@ int (*dcpu_ops[])( dcpu16_t *dcpu, dcpu_inst_t inst ) =
 	dcpu_ifu,		/* 0x17 = IFU */
 	dcpu_inval,		/* 0x18 = INVALID */
 	dcpu_inval,		/* 0x19 = INVALID */
-	dcpu_inval,		/* 0x1a = INVALID */
-	dcpu_inval,		/* 0x1b = INVALID */
+	dcpu_adx,		/* 0x1a = ADX */
+	dcpu_sbx,		/* 0x1b = SBX */
 	dcpu_inval,		/* 0x1c = INVALID */
 	dcpu_inval,		/* 0x1d = INVALID */
-	dcpu_inval,		/* 0x1e = INVALID */
-	dcpu_inval		/* 0x1f = INVALID */
+	dcpu_sti,		/* 0x1e = STI */
+	dcpu_std		/* 0x1f = STD */
 };
 
 /* 
@@ -98,10 +105,10 @@ int (*dcpu_special_ops[])( dcpu16_t *dcpu, dcpu_inst_t inst ) =
 	dcpu_inval,		/* 0x06 = INVALD */
 	dcpu_inval,		/* 0x07 = INVALD */
 	dcpu_int,		/* 0x08 = INT */
-	dcpu_ing,		/* 0x09 = ING */
-	dcpu_ins,		/* 0x0a = INS */
-	dcpu_inval,		/* 0x0b = INVALD */
-	dcpu_inval,		/* 0x0c = INVALD */
+	dcpu_iag,		/* 0x09 = IAG */
+	dcpu_ias,		/* 0x0a = IAS */
+	dcpu_rfi,		/* 0x0b = RFI */
+	dcpu_iaq,		/* 0x0c = IAQ */
 	dcpu_inval,		/* 0x0d = INVALD */
 	dcpu_inval,		/* 0x0e = INVALD */
 	dcpu_inval,		/* 0x0f = INVALD */
@@ -271,7 +278,8 @@ int dcpu_do_inst( dcpu16_t *dcpu )
 	dcpu_inst_t inst;
 	inst.all = dcpu->memory[dcpu->PC++];
 
-	fprintf( stdout, "Got opcode a=%x, b=%x, o=%x\n", inst.a, inst.b, inst.o);
+	printf("Instruction: o=0x%04x\ta=0x%04x\tb=0x%04x\n", inst.o, inst.a, inst.b );
+
 	return dcpu_ops[inst.o]( dcpu, inst );
 }
 
@@ -297,6 +305,14 @@ int dcpu_add( dcpu16_t *dcpu, dcpu_inst_t inst )
 	a = get_a( dcpu, inst.a );
 	b = get_b( dcpu, inst.b );
 	set( dcpu, inst.b, b + a);
+	if( (uint32_t)b + (uint32_t)a > 0xFFFF )
+	{
+		dcpu->EX = 0x0001;
+	}
+	else
+	{
+		dcpu->EX = 0x0000;
+	}
 	return 2;
 }
 int dcpu_sub( dcpu16_t *dcpu, dcpu_inst_t inst )
@@ -305,6 +321,55 @@ int dcpu_sub( dcpu16_t *dcpu, dcpu_inst_t inst )
 	a = get_a( dcpu, inst.a );
 	b = get_b( dcpu, inst.b );
 	set( dcpu, inst.b, b - a);
+	if( (int)((uint32_t)b - (uint32_t)a) < 0 )
+	{
+		dcpu->EX = 0xFFFF;
+	}
+	else
+	{
+		dcpu->EX = 0x0000;
+	}
+
+	/* check for SUB PC, 1 as 2 bytes */
+	if( inst.b == 0x1c && a == 1 && inst.a != 0x22 )
+	{	
+		dcpu->PC--;
+	}
+	return 2;
+}
+int dcpu_adx( dcpu16_t *dcpu, dcpu_inst_t inst )
+{
+	dcpu_reg_t a, b, ex;
+	a = get_a( dcpu, inst.a );
+	b = get_b( dcpu, inst.b );
+	ex = dcpu->EX;
+	set( dcpu, inst.b, b + a + ex);
+	if( (uint32_t)b + (uint32_t)a + (uint32_t)ex > 0xFFFF )
+	{
+		dcpu->EX = 0x0001;
+	}
+	else
+	{
+		dcpu->EX = 0x0000;
+	}
+	return 2;
+}
+int dcpu_sbx( dcpu16_t *dcpu, dcpu_inst_t inst )
+{
+	dcpu_reg_t a, b;
+	dcpu_reg_sign_t ex;
+	a = get_a( dcpu, inst.a );
+	b = get_b( dcpu, inst.b );
+	ex = dcpu->EX;
+	set( dcpu, inst.b, b - a + ex);
+	if( (int)((uint32_t)b - (uint32_t)a + (int32_t)ex) < 0 )
+	{
+		dcpu->EX = 0xFFFF;
+	}
+	else
+	{
+		dcpu->EX = 0x0000;
+	}
 	return 2;
 }
 int dcpu_mul( dcpu16_t *dcpu, dcpu_inst_t inst )
@@ -313,6 +378,7 @@ int dcpu_mul( dcpu16_t *dcpu, dcpu_inst_t inst )
 	a = get_a( dcpu, inst.a );
 	b = get_b( dcpu, inst.b );
 	set( dcpu, inst.b, b * a);
+	dcpu->EX = (((uint32_t)b*(uint32_t)a)>>16)&0xFFFF;
 	return 2;
 }
 int dcpu_mli( dcpu16_t *dcpu, dcpu_inst_t inst )
@@ -321,6 +387,7 @@ int dcpu_mli( dcpu16_t *dcpu, dcpu_inst_t inst )
 	a = get_a( dcpu, inst.a );
 	b = get_b( dcpu, inst.b );
 	set( dcpu, inst.b, b * a);
+	dcpu->EX = (((int32_t)b*(int32_t)a)>>16)&0xFFFF;
 	return 2;
 }
 int dcpu_div( dcpu16_t *dcpu, dcpu_inst_t inst )
@@ -328,7 +395,16 @@ int dcpu_div( dcpu16_t *dcpu, dcpu_inst_t inst )
 	dcpu_reg_t a, b;
 	a = get_a( dcpu, inst.a );
 	b = get_b( dcpu, inst.b );
-	set( dcpu, inst.b, b / a);
+	if( a == 0 )
+	{
+		set(dcpu, inst.b, 0 );
+		dcpu->EX = 0;
+	}
+	else
+	{
+		set( dcpu, inst.b, b / a);
+		dcpu->EX = (((uint32_t)b<<16)/(uint32_t)a)&0xFFFF;
+	}
 	return 3;
 }
 int dcpu_dvi( dcpu16_t *dcpu, dcpu_inst_t inst )
@@ -336,12 +412,29 @@ int dcpu_dvi( dcpu16_t *dcpu, dcpu_inst_t inst )
 	dcpu_reg_sign_t a, b;
 	a = get_a( dcpu, inst.a );
 	b = get_b( dcpu, inst.b );
-	set( dcpu, inst.b, b / a);
+	if( a == 0 )
+	{
+		set(dcpu, inst.b, 0 );
+		dcpu->EX = 0;
+	}
+	else
+	{
+		set( dcpu, inst.b, b / a);
+		dcpu->EX = (((int32_t)b<<16)/(int32_t)a)&0xFFFF;
+	}
 	return 3;
 }
 int dcpu_mod( dcpu16_t *dcpu, dcpu_inst_t inst )
 {
 	dcpu_reg_t a, b;
+	a = get_a( dcpu, inst.a );
+	b = get_b( dcpu, inst.b );
+	set( dcpu, inst.b, b % a);
+	return 3;
+}
+int dcpu_mdi( dcpu16_t *dcpu, dcpu_inst_t inst )
+{
+	dcpu_reg_sign_t a, b;
 	a = get_a( dcpu, inst.a );
 	b = get_b( dcpu, inst.b );
 	set( dcpu, inst.b, b % a);
@@ -377,6 +470,7 @@ int dcpu_shr( dcpu16_t *dcpu, dcpu_inst_t inst )
 	a = get_a( dcpu, inst.a );
 	b = get_b( dcpu, inst.b );
 	set( dcpu, inst.b, b >> a);
+	dcpu->EX = (((uint32_t)b<<16)>>a) & 0xFFFF;
 	return 2;
 }
 int dcpu_asr( dcpu16_t *dcpu, dcpu_inst_t inst )
@@ -386,6 +480,7 @@ int dcpu_asr( dcpu16_t *dcpu, dcpu_inst_t inst )
 	a = get_a( dcpu, inst.a );
 	b = get_b( dcpu, inst.b );
 	set( dcpu, inst.b, b >> a);
+	dcpu->EX = (((int32_t)b<<16)>>a) & 0xFFFF;
 	return 2;
 }
 int dcpu_shl( dcpu16_t *dcpu, dcpu_inst_t inst )
@@ -394,6 +489,7 @@ int dcpu_shl( dcpu16_t *dcpu, dcpu_inst_t inst )
 	a = get_a( dcpu, inst.a );
 	b = get_b( dcpu, inst.b );
 	set( dcpu, inst.b, b << a);
+	dcpu->EX = (((uint32_t)b<<a)>>16) & 0xFFFF;
 	return 2;
 }
 int dcpu_ifb( dcpu16_t *dcpu, dcpu_inst_t inst )
@@ -460,6 +556,26 @@ int dcpu_ifu( dcpu16_t *dcpu, dcpu_inst_t inst )
 	if( b >= a ) dcpu->state = SKIPPING;
 	return 2;
 }
+int dcpu_sti( dcpu16_t *dcpu, dcpu_inst_t inst )
+{
+	dcpu_reg_t a, b;
+	a = get_a( dcpu, inst.a );
+	b = get_b( dcpu, inst.b );
+	set( dcpu, inst.b, a );
+	dcpu->I++;
+	dcpu->J++;
+	return 2;
+}
+int dcpu_std( dcpu16_t *dcpu, dcpu_inst_t inst )
+{
+	dcpu_reg_t a, b;
+	a = get_a( dcpu, inst.a );
+	b = get_b( dcpu, inst.b );
+	set( dcpu, inst.b, a );
+	dcpu->I--;
+	dcpu->J--;
+	return 2;
+}
 
 int dcpu_jsr( dcpu16_t *dcpu, dcpu_inst_t inst )
 {
@@ -472,12 +588,24 @@ int dcpu_int( dcpu16_t *dcpu, dcpu_inst_t inst )
 	// TODO
 	return 4;
 }
-int dcpu_ing( dcpu16_t *dcpu, dcpu_inst_t inst )
+int dcpu_iag( dcpu16_t *dcpu, dcpu_inst_t inst )
+{
+	set( dcpu, inst.a, dcpu->IA );
+	return 1;
+}
+int dcpu_ias( dcpu16_t *dcpu, dcpu_inst_t inst )
+{
+	dcpu_reg_t a;
+	a = get_a( dcpu, inst.a );
+	dcpu->IA = a;
+	return 1;
+}
+int dcpu_rfi( dcpu16_t *dcpu, dcpu_inst_t inst )
 {
 	// TODO
 	return 1;
 }
-int dcpu_ins( dcpu16_t *dcpu, dcpu_inst_t inst )
+int dcpu_iaq( dcpu16_t *dcpu, dcpu_inst_t inst )
 {
 	// TODO
 	return 1;

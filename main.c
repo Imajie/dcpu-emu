@@ -3,13 +3,37 @@
  *
  * Testing
  */
+#include <stdio.h>
+#include <stdlib.h>
+
 #include "dcpu.h"
 #include "dcpu_types.h"
 
-uint16_t mem[0x8000] = 
+
+uint16_t mem[0x10000];
+
+void read_prog( FILE *file )
 {
-	0x0000, 0x0000
-};
+	uint8_t *ptr = (uint8_t*)mem;
+
+	while( !feof(file) )
+	{
+		fread(ptr++, 1, 1, file);
+	}
+}
+
+void reg_debug( dcpu16_t *dcpu )
+{
+	/* data registers */
+	fprintf( stdout, " A=0x%04x  B=0x%04x  C=0x%04x  X=0x%04x  Y=0x%04x  Z=0x%04x  I=0x%04x  J=0x%04x\n", 
+			dcpu->A, dcpu->B, dcpu->C, dcpu->X, dcpu->Y, dcpu->Z, dcpu->I, dcpu->J);
+
+	/* state/extra */
+	fprintf( stdout, "PC=0x%04x SP=0x%04x EX=0x%04x IA=0x%04x clocks=%i\n",
+			dcpu->PC, dcpu->SP, dcpu->EX, dcpu->IA, dcpu->clocks);
+
+	fprintf( stdout, "\n" );
+}
 
 int main( int argc, char ** argv )
 {
@@ -17,25 +41,28 @@ int main( int argc, char ** argv )
 
 	dcpu_inst_t *inst;
 
-	inst = (void*)&mem[0];
-	/* ADD A, 0x01 */
-	inst->o = 0x02;
-	inst->a = 0x22;
-	inst->b = 0x00;
+	if( argc < 2 )
+	{
+		fprintf( stderr, "Usage: %s file.bin\n", argv[0] );
+		exit(1);
+	}
 
-	inst = (void*)&mem[1];
-	/* SET PC, 0x00 */
-	inst->o = 0x01;
-	inst->a = 0x21;
-	inst->b = 0x1C;
+	FILE *file = fopen(argv[1], "rb");
+	if( !file )
+	{
+		perror(argv[1]);
+		exit(1);
+	}
 
+	read_prog(file);
+	fclose(file);
 
 	dcpu_create( &dcpu, mem );
 
 	for( int i = 0; i < 100; i++ )
 	{
 		dcpu_tick( &dcpu );
-		printf("A = %i\n", dcpu.A);
+		reg_debug( &dcpu );
 	}
 
 	dcpu_free( &dcpu );

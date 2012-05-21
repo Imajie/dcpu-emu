@@ -1,0 +1,4 @@
+*.o
+dcpu_emu
+tags
+.*.swp
