@@ -12,7 +12,7 @@
 
 const char *state_strs[] = 
 {
-	"NORMAL", "SKIPPING", "HALTING"
+	"NORMAL", "SKIPPING", "HALTING", "ON FIRE"
 };
 
 /*
@@ -46,6 +46,13 @@ void dcpu_create( dcpu16_t *dcpu, dcpu_ram_t prog )
 
 	dcpu->hardware = NULL;
 	dcpu->hardware_count = 0;
+
+	dcpu->IAQ = 0;
+	dcpu->interrupt = dcpu_interrupt;
+
+	dcpu->ib_start = 0;
+	dcpu->ib_end = 0;
+	dcpu->ib_size = 0;
 
 	return;
 }
@@ -95,6 +102,20 @@ void dcpu_tick( dcpu16_t *dcpu )
 	for( int i = 0; i < dcpu->hardware_count; i++ )
 	{
 		dcpu->hardware[i]->tick(dcpu, dcpu->hardware[i]);
+	}
+
+	// check for interrupt
+	if( !dcpu->IAQ && dcpu->ib_size > 0 )
+	{
+		// get message
+		uint16_t msg = dcpu->int_buffer[dcpu->ib_start];
+
+		// move pointer
+		dcpu->ib_size--;
+		dcpu->ib_start = (dcpu->ib_start+1) % 256;
+
+		// interrupt
+		dcpu->interrupt( dcpu, msg );
 	}
 }
 

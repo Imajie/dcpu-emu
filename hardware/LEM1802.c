@@ -70,7 +70,7 @@ pallet_t *default_pallet = LEM1802_pallet;
  *
  * Initialize the window, and load font map
  */
-LEM1802_t* init_LEM1802( unsigned int monitor_scale)
+LEM1802_t* init_LEM1802( unsigned int monitor_scale )
 {
 	LEM1802_t *monitor = (LEM1802_t*)calloc(1, sizeof(LEM1802_t));
 	
@@ -195,9 +195,11 @@ void interrupt_LEM1802( dcpu16_t* dcpu, dcpu_hardware_t *hardware )
  */
 dcpu_hardware_t* create_LEM1802( unsigned int monitor_scale )
 {
+	NEW_HARDWARE(LEM1802, monitor_scale);
+	/*
 	dcpu_hardware_t* hardware = calloc(1, sizeof(dcpu_hardware_t));
 
-	/* setup hardware interface */
+	// setup hardware interface
 	hardware->interrupt	= interrupt_LEM1802;
 	hardware->tick		= tick_LEM1802;
 	hardware->hw_id		= HW_ID;
@@ -205,9 +207,10 @@ dcpu_hardware_t* create_LEM1802( unsigned int monitor_scale )
 	hardware->man_id	= MAN_ID;
 
 
-	/* intialize window, load font, etc... */
+	// intialize window, load font, etc...
 	hardware->device_data = (void*)init_LEM1802( monitor_scale );
 
 	return hardware;
+	*/
 }
 

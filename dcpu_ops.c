@@ -277,6 +277,51 @@ dcpu_reg_t get_b( dcpu16_t *dcpu, dcpu_reg_t val )
 	return get( dcpu, val, B_TYPE );
 }
 
+/*
+ * dcpu_interrupt
+ *
+ * generate an interrupt
+ */
+void dcpu_interrupt( dcpu16_t *dcpu, dcpu_reg_t msg )
+{
+	// if IA is 0, no interrupts
+	if( dcpu->IA == 0x0000 ) return;
+
+	if( !dcpu->IAQ )
+	{
+		// interrupt now
+
+		// Turn on queueing
+		dcpu->IAQ = 1;
+
+		// PUSH PC, PUSH A
+		dcpu->memory[--dcpu->SP] = dcpu->PC;
+		dcpu->memory[--dcpu->SP] = dcpu->A;
+
+		// PC <- IA
+		// A  <- msg
+		dcpu->PC = dcpu->IA;
+		dcpu->A  = msg;
+		printf("dcpu: Entering interrupt msg= %i\n", msg );
+	}
+	else
+	{
+		// at to queue
+		if( dcpu->ib_size >= 255 )
+		{
+			dcpu->state = ON_FIRE;
+		}
+		else
+		{
+			// add to queue
+			dcpu->int_buffer[dcpu->ib_end] = msg;
+
+			// move pointer
+			dcpu->ib_size++;
+			dcpu->ib_end = (dcpu->ib_end+1) % 256;
+		}
+	}
+}
 
 /*
  * Perform the next opcode
@@ -286,7 +331,7 @@ int dcpu_do_inst( dcpu16_t *dcpu )
 	dcpu_inst_t inst;
 	inst.all = dcpu->memory[dcpu->PC++];
 
-	printf("Instruction: o=0x%04x\ta=0x%04x\tb=0x%04x\n", inst.o, inst.a, inst.b );
+	//printf("Instruction: o=0x%04x\ta=0x%04x\tb=0x%04x\n", inst.o, inst.a, inst.b );
 
 	if( dcpu->state == SKIPPING )
 	{
@@ -600,13 +645,14 @@ int dcpu_std( dcpu16_t *dcpu, dcpu_inst_t inst )
 
 int dcpu_jsr( dcpu16_t *dcpu, dcpu_inst_t inst )
 {
+	uint16_t addr = get_a( dcpu, inst.a );
 	dcpu->memory[--dcpu->SP] = dcpu->PC;
-	dcpu->PC = get_a( dcpu, inst.a );
+	dcpu->PC = addr;
 	return 3;
 }
 int dcpu_int( dcpu16_t *dcpu, dcpu_inst_t inst )
 {
-	// TODO
+	dcpu->interrupt( dcpu, get_a( dcpu, inst.a ) );
 	return 4;
 }
 int dcpu_iag( dcpu16_t *dcpu, dcpu_inst_t inst )
@@ -623,12 +669,26 @@ int dcpu_ias( dcpu16_t *dcpu, dcpu_inst_t inst )
 }
 int dcpu_rfi( dcpu16_t *dcpu, dcpu_inst_t inst )
 {
-	// TODO
+	dcpu_reg_t a;
+
+	a = get_a( dcpu, inst.a );
+
+	// re-enable interrupts
+	dcpu->IAQ = 0;
+
+	// POP A, POP PC
+	dcpu->A  = dcpu->memory[dcpu->SP++];
+	dcpu->PC = dcpu->memory[dcpu->SP++];
+
 	return 1;
 }
 int dcpu_iaq( dcpu16_t *dcpu, dcpu_inst_t inst )
 {
-	// TODO
+	dcpu_reg_t a;
+	a = get_a( dcpu, inst.a );
+
+	dcpu->IAQ = a;
+
 	return 1;
 }
 
@@ -676,7 +736,7 @@ int dcpu_hwi( dcpu16_t *dcpu, dcpu_inst_t inst )
 
 int dcpu_inval( dcpu16_t *dcpu, dcpu_inst_t inst )
 {
-	fprintf(stderr, "Invalid opcode %#x\n", inst);
+	fprintf(stderr, "Invalid opcode o = 0x%02x\ta = 0x%02x\tb = 0x%02x\n", inst.o, inst.a, inst.b);
 	return 0;
 }
 

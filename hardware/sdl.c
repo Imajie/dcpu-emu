@@ -9,6 +9,7 @@
 #include "sdl.h"
 
 int sdl_killed = 0;
+keyboard_t *sdl_keyboard = NULL;
 
 /*
  * sdl_init
@@ -87,10 +88,22 @@ int sdl_handle_events(void)
 				{
 					sdl_killed = 1;
 				}
-				// TODO
+				// fall through
+			case SDL_KEYUP: // and KEYDOWN
+				if( sdl_keyboard )
+					event_callback_Keyboard( sdl_keyboard, event.key.keysym.sym, event.type == SDL_KEYDOWN );
 				break;
 		}
 	}
 	return quit;
 }
 
+/*
+ * sdl_attach_keyboard
+ *
+ * Set the device to recieve keyboard input
+ */
+void sdl_attach_keyboard( keyboard_t *keyboard )
+{
+	sdl_keyboard = keyboard;
+}

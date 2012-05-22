@@ -40,8 +40,8 @@ void reg_debug( dcpu16_t *dcpu )
 			dcpu->A, dcpu->B, dcpu->C, dcpu->X, dcpu->Y, dcpu->Z, dcpu->I, dcpu->J);
 
 	/* state/extra */
-	fprintf( stdout, "PC=0x%04x SP=0x%04x EX=0x%04x IA=0x%04x clocks=%i\tstate=%s\n",
-			dcpu->PC, dcpu->SP, dcpu->EX, dcpu->IA, dcpu->clocks, state_strs[dcpu->state]);
+	fprintf( stdout, "PC=0x%04x SP=0x%04x EX=0x%04x IA=0x%04x IAQ=0x%04x clocks=%i\tstate=%s\n",
+			dcpu->PC, dcpu->SP, dcpu->EX, dcpu->IA, dcpu->IAQ, dcpu->clocks, state_strs[dcpu->state]);
 
 	fprintf( stdout, "\n" );
 }
@@ -71,6 +71,7 @@ int main( int argc, char ** argv )
 	dcpu_create( &dcpu, mem );
 
 	dcpu_add_hardware( &dcpu, create_LEM1802( 5 ) );
+	dcpu_add_hardware( &dcpu, create_Keyboard( ) );
 
 	signal( SIGKILL, _kill );
 	signal( SIGTERM, _kill );
@@ -80,7 +81,7 @@ int main( int argc, char ** argv )
 	{
 		dcpu_tick( &dcpu );
 		sdl_handle_events();
-		reg_debug( &dcpu );
+		//reg_debug( &dcpu );
 		//usleep( 1000000 );
 	}
 

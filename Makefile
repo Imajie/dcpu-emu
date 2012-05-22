@@ -71,9 +71,9 @@ clean:
 ./main.o: /usr/include/bits/sigthread.h /usr/include/unistd.h
 ./main.o: /usr/include/bits/posix_opt.h /usr/include/bits/environments.h
 ./main.o: /usr/include/bits/confname.h /usr/include/getopt.h
-./main.o: /usr/include/ctype.h dcpu.h /usr/include/stdint.h dcpu_types.h
-./main.o: hardware/LEM1802.h hardware_device.h hardware/sdl.h
-./main.o: /usr/include/SDL/SDL.h /usr/include/SDL/SDL_main.h
+./main.o: /usr/include/ctype.h /usr/include/poll.h /usr/include/sys/poll.h
+./main.o: /usr/include/bits/poll.h dcpu.h /usr/include/stdint.h dcpu_types.h
+./main.o: hardware/sdl.h /usr/include/SDL/SDL.h /usr/include/SDL/SDL_main.h
 ./main.o: /usr/include/SDL/SDL_stdinc.h /usr/include/SDL/SDL_config.h
 ./main.o: /usr/include/SDL/SDL_platform.h /usr/include/string.h
 ./main.o: /usr/include/inttypes.h /usr/include/iconv.h
@@ -87,48 +87,27 @@ clean:
 ./main.o: /usr/include/SDL/SDL_mouse.h /usr/include/SDL/SDL_video.h
 ./main.o: /usr/include/SDL/SDL_joystick.h /usr/include/SDL/SDL_quit.h
 ./main.o: /usr/include/SDL/SDL_loadso.h /usr/include/SDL/SDL_timer.h
-./main.o: /usr/include/SDL/SDL_version.h
+./main.o: /usr/include/SDL/SDL_version.h hardware/LEM1802.h hardware_device.h
+./main.o: hardware/sdl.h
 hardware/LEM1802.o: hardware_device.h /usr/include/stdint.h
 hardware/LEM1802.o: /usr/include/features.h /usr/include/sys/cdefs.h
 hardware/LEM1802.o: /usr/include/bits/wordsize.h /usr/include/gnu/stubs.h
 hardware/LEM1802.o: /usr/include/gnu/stubs-64.h /usr/include/bits/wchar.h
 hardware/LEM1802.o: dcpu.h hardware/LEM1802.h hardware/sdl.h
-hardware/LEM1802.o: /usr/include/SDL/SDL.h /usr/include/SDL/SDL_main.h
-hardware/LEM1802.o: /usr/include/SDL/SDL_stdinc.h
-hardware/LEM1802.o: /usr/include/SDL/SDL_config.h
-hardware/LEM1802.o: /usr/include/SDL/SDL_platform.h /usr/include/stdio.h
-hardware/LEM1802.o: /usr/include/bits/types.h /usr/include/bits/typesizes.h
-hardware/LEM1802.o: /usr/include/libio.h /usr/include/_G_config.h
-hardware/LEM1802.o: /usr/include/wchar.h /usr/include/xlocale.h
-hardware/LEM1802.o: /usr/include/bits/stdio_lim.h
-hardware/LEM1802.o: /usr/include/bits/sys_errlist.h /usr/include/stdlib.h
+hardware/LEM1802.o: hardware/LEM1802_builtin.h /usr/include/stdlib.h
 hardware/LEM1802.o: /usr/include/bits/waitflags.h
 hardware/LEM1802.o: /usr/include/bits/waitstatus.h /usr/include/endian.h
 hardware/LEM1802.o: /usr/include/bits/endian.h /usr/include/bits/byteswap.h
-hardware/LEM1802.o: /usr/include/sys/types.h /usr/include/time.h
-hardware/LEM1802.o: /usr/include/sys/select.h /usr/include/bits/select.h
-hardware/LEM1802.o: /usr/include/bits/sigset.h /usr/include/bits/time.h
-hardware/LEM1802.o: /usr/include/sys/sysmacros.h
+hardware/LEM1802.o: /usr/include/xlocale.h /usr/include/sys/types.h
+hardware/LEM1802.o: /usr/include/bits/types.h /usr/include/bits/typesizes.h
+hardware/LEM1802.o: /usr/include/time.h /usr/include/sys/select.h
+hardware/LEM1802.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
+hardware/LEM1802.o: /usr/include/bits/time.h /usr/include/sys/sysmacros.h
 hardware/LEM1802.o: /usr/include/bits/pthreadtypes.h /usr/include/alloca.h
-hardware/LEM1802.o: /usr/include/string.h /usr/include/inttypes.h
-hardware/LEM1802.o: /usr/include/ctype.h /usr/include/iconv.h
-hardware/LEM1802.o: /usr/include/SDL/begin_code.h
-hardware/LEM1802.o: /usr/include/SDL/close_code.h
-hardware/LEM1802.o: /usr/include/SDL/SDL_audio.h /usr/include/SDL/SDL_error.h
-hardware/LEM1802.o: /usr/include/SDL/SDL_endian.h
-hardware/LEM1802.o: /usr/include/SDL/SDL_mutex.h
-hardware/LEM1802.o: /usr/include/SDL/SDL_thread.h
-hardware/LEM1802.o: /usr/include/SDL/SDL_rwops.h /usr/include/SDL/SDL_cdrom.h
-hardware/LEM1802.o: /usr/include/SDL/SDL_cpuinfo.h
-hardware/LEM1802.o: /usr/include/SDL/SDL_events.h
-hardware/LEM1802.o: /usr/include/SDL/SDL_active.h
-hardware/LEM1802.o: /usr/include/SDL/SDL_keyboard.h
-hardware/LEM1802.o: /usr/include/SDL/SDL_keysym.h
-hardware/LEM1802.o: /usr/include/SDL/SDL_mouse.h /usr/include/SDL/SDL_video.h
-hardware/LEM1802.o: /usr/include/SDL/SDL_joystick.h
-hardware/LEM1802.o: /usr/include/SDL/SDL_quit.h /usr/include/SDL/SDL_loadso.h
-hardware/LEM1802.o: /usr/include/SDL/SDL_timer.h
-hardware/LEM1802.o: /usr/include/SDL/SDL_version.h hardware/LEM1802_builtin.h
+hardware/LEM1802.o: /usr/include/stdio.h /usr/include/libio.h
+hardware/LEM1802.o: /usr/include/_G_config.h /usr/include/wchar.h
+hardware/LEM1802.o: /usr/include/bits/stdio_lim.h
+hardware/LEM1802.o: /usr/include/bits/sys_errlist.h
 hardware/LEM1802_builtin.o: hardware/LEM1802_builtin.h hardware/LEM1802.h
 hardware/LEM1802_builtin.o: hardware_device.h /usr/include/stdint.h
 hardware/LEM1802_builtin.o: /usr/include/features.h /usr/include/sys/cdefs.h
@@ -136,53 +115,28 @@ hardware/LEM1802_builtin.o: /usr/include/bits/wordsize.h
 hardware/LEM1802_builtin.o: /usr/include/gnu/stubs.h
 hardware/LEM1802_builtin.o: /usr/include/gnu/stubs-64.h
 hardware/LEM1802_builtin.o: /usr/include/bits/wchar.h dcpu.h hardware/sdl.h
-hardware/LEM1802_builtin.o: /usr/include/SDL/SDL.h
-hardware/LEM1802_builtin.o: /usr/include/SDL/SDL_main.h
-hardware/LEM1802_builtin.o: /usr/include/SDL/SDL_stdinc.h
-hardware/LEM1802_builtin.o: /usr/include/SDL/SDL_config.h
-hardware/LEM1802_builtin.o: /usr/include/SDL/SDL_platform.h
-hardware/LEM1802_builtin.o: /usr/include/stdio.h /usr/include/bits/types.h
-hardware/LEM1802_builtin.o: /usr/include/bits/typesizes.h
-hardware/LEM1802_builtin.o: /usr/include/libio.h /usr/include/_G_config.h
-hardware/LEM1802_builtin.o: /usr/include/wchar.h /usr/include/xlocale.h
-hardware/LEM1802_builtin.o: /usr/include/bits/stdio_lim.h
-hardware/LEM1802_builtin.o: /usr/include/bits/sys_errlist.h
-hardware/LEM1802_builtin.o: /usr/include/stdlib.h
-hardware/LEM1802_builtin.o: /usr/include/bits/waitflags.h
-hardware/LEM1802_builtin.o: /usr/include/bits/waitstatus.h
-hardware/LEM1802_builtin.o: /usr/include/endian.h /usr/include/bits/endian.h
-hardware/LEM1802_builtin.o: /usr/include/bits/byteswap.h
-hardware/LEM1802_builtin.o: /usr/include/sys/types.h /usr/include/time.h
-hardware/LEM1802_builtin.o: /usr/include/sys/select.h
-hardware/LEM1802_builtin.o: /usr/include/bits/select.h
-hardware/LEM1802_builtin.o: /usr/include/bits/sigset.h
-hardware/LEM1802_builtin.o: /usr/include/bits/time.h
-hardware/LEM1802_builtin.o: /usr/include/sys/sysmacros.h
-hardware/LEM1802_builtin.o: /usr/include/bits/pthreadtypes.h
-hardware/LEM1802_builtin.o: /usr/include/alloca.h /usr/include/string.h
-hardware/LEM1802_builtin.o: /usr/include/inttypes.h /usr/include/ctype.h
-hardware/LEM1802_builtin.o: /usr/include/iconv.h
-hardware/LEM1802_builtin.o: /usr/include/SDL/begin_code.h
-hardware/LEM1802_builtin.o: /usr/include/SDL/close_code.h
-hardware/LEM1802_builtin.o: /usr/include/SDL/SDL_audio.h
-hardware/LEM1802_builtin.o: /usr/include/SDL/SDL_error.h
-hardware/LEM1802_builtin.o: /usr/include/SDL/SDL_endian.h
-hardware/LEM1802_builtin.o: /usr/include/SDL/SDL_mutex.h
-hardware/LEM1802_builtin.o: /usr/include/SDL/SDL_thread.h
-hardware/LEM1802_builtin.o: /usr/include/SDL/SDL_rwops.h
-hardware/LEM1802_builtin.o: /usr/include/SDL/SDL_cdrom.h
-hardware/LEM1802_builtin.o: /usr/include/SDL/SDL_cpuinfo.h
-hardware/LEM1802_builtin.o: /usr/include/SDL/SDL_events.h
-hardware/LEM1802_builtin.o: /usr/include/SDL/SDL_active.h
-hardware/LEM1802_builtin.o: /usr/include/SDL/SDL_keyboard.h
-hardware/LEM1802_builtin.o: /usr/include/SDL/SDL_keysym.h
-hardware/LEM1802_builtin.o: /usr/include/SDL/SDL_mouse.h
-hardware/LEM1802_builtin.o: /usr/include/SDL/SDL_video.h
-hardware/LEM1802_builtin.o: /usr/include/SDL/SDL_joystick.h
-hardware/LEM1802_builtin.o: /usr/include/SDL/SDL_quit.h
-hardware/LEM1802_builtin.o: /usr/include/SDL/SDL_loadso.h
-hardware/LEM1802_builtin.o: /usr/include/SDL/SDL_timer.h
-hardware/LEM1802_builtin.o: /usr/include/SDL/SDL_version.h
+hardware/generic_keyboard.o: /usr/include/stdlib.h /usr/include/features.h
+hardware/generic_keyboard.o: /usr/include/sys/cdefs.h
+hardware/generic_keyboard.o: /usr/include/bits/wordsize.h
+hardware/generic_keyboard.o: /usr/include/gnu/stubs.h
+hardware/generic_keyboard.o: /usr/include/gnu/stubs-64.h
+hardware/generic_keyboard.o: /usr/include/bits/waitflags.h
+hardware/generic_keyboard.o: /usr/include/bits/waitstatus.h
+hardware/generic_keyboard.o: /usr/include/endian.h /usr/include/bits/endian.h
+hardware/generic_keyboard.o: /usr/include/bits/byteswap.h
+hardware/generic_keyboard.o: /usr/include/xlocale.h /usr/include/sys/types.h
+hardware/generic_keyboard.o: /usr/include/bits/types.h
+hardware/generic_keyboard.o: /usr/include/bits/typesizes.h
+hardware/generic_keyboard.o: /usr/include/time.h /usr/include/sys/select.h
+hardware/generic_keyboard.o: /usr/include/bits/select.h
+hardware/generic_keyboard.o: /usr/include/bits/sigset.h
+hardware/generic_keyboard.o: /usr/include/bits/time.h
+hardware/generic_keyboard.o: /usr/include/sys/sysmacros.h
+hardware/generic_keyboard.o: /usr/include/bits/pthreadtypes.h
+hardware/generic_keyboard.o: /usr/include/alloca.h dcpu.h
+hardware/generic_keyboard.o: /usr/include/stdint.h /usr/include/bits/wchar.h
+hardware/generic_keyboard.o: hardware_device.h dcpu.h
+hardware/generic_keyboard.o: hardware/generic_keyboard.h hardware/sdl.h
 hardware/sdl.o: /usr/include/stdio.h /usr/include/features.h
 hardware/sdl.o: /usr/include/sys/cdefs.h /usr/include/bits/wordsize.h
 hardware/sdl.o: /usr/include/gnu/stubs.h /usr/include/gnu/stubs-64.h

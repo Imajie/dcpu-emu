@@ -7,6 +7,7 @@
 #define SDL_H
 
 #include <SDL.h>
+#include "generic_keyboard.h"
 
 #define BPP 4
 #define DEPTH 32
@@ -33,5 +34,12 @@ void sdl_draw_screen(SDL_Surface* screen, int x, int y, uint8_t r, uint8_t g, ui
  * Handle SDL events
  */
 int sdl_handle_events(void);
+
+/*
+ * sdl_attach_keyboard
+ *
+ * Set the device to recieve keyboard input
+ */
+void sdl_attach_keyboard( keyboard_t *keyboard );
 
 #endif

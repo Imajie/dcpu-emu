@@ -21,7 +21,7 @@ typedef int16_t   dcpu_reg_sign_t;
 
 /* CPU states */
 typedef enum {
-	NORMAL, SKIPPING, HALTING
+	NORMAL, SKIPPING, HALTING, ON_FIRE
 } dcpu_state_t;
 
 extern const char *state_strs[];
@@ -49,6 +49,14 @@ typedef struct dcpu {
 	/* extra stuff */
 	unsigned long clocks;
 	dcpu_state_t state;
+
+	// interrupts
+	void (*interrupt)(struct dcpu *dcpu, dcpu_reg_t msg);
+	uint8_t IAQ;
+	uint16_t int_buffer[256];
+	uint16_t  ib_start, ib_end, ib_size;
+
+
 } dcpu16_t ;
 
 /*
@@ -85,4 +93,5 @@ void dcpu_tick( dcpu16_t *dcpu );
  * Returns zero when SUB PC,1 has not be encountered, nonzero otherwise
  */
 int dcpu_complete( dcpu16_t *dcpu );
+
 #endif
