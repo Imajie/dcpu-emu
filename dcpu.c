@@ -26,7 +26,7 @@ void dcpu_create( dcpu16_t *dcpu, dcpu_ram_t prog )
 	dcpu->clocks = 0;
 
 	// 100KHz
-	dcpu->frequency = 100000;
+	dcpu->frequency = 100*1000;
 
 	// everything starts out zero'd
 	dcpu->A = 0;

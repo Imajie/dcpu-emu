@@ -89,7 +89,7 @@ int main( int argc, char ** argv )
 		//reg_debug( &dcpu );
 		
 		gettimeofday( &end, NULL );
-		int elapsed = (end.tv_sec - start.tv_sec)*1000000 + (end.tv_usec - start.tv_usec);
+		int elapsed = (end.tv_sec - start.tv_sec)*1000*1000 + (end.tv_usec - start.tv_usec);
 
 		int to_sleep = 10*ticks - elapsed;
 
