@@ -21,7 +21,7 @@ typedef int16_t   dcpu_reg_sign_t;
 
 /* CPU states */
 typedef enum {
-	NORMAL, SKIPPING
+	NORMAL, SKIPPING, HALTING
 } dcpu_state_t;
 
 /* cpu registers */
@@ -77,4 +77,10 @@ void dcpu_free( dcpu16_t *dcpu );
  */
 void dcpu_tick( dcpu16_t *dcpu );
 
+/*
+ * dcpu_complete
+ *
+ * Returns zero when SUB PC,1 has not be encountered, nonzero otherwise
+ */
+int dcpu_complete( dcpu16_t *dcpu );
 #endif

@@ -62,7 +62,7 @@ int main( int argc, char ** argv )
 
 	dcpu_add_hardware( &dcpu, create_LEM1802( 5 ) );
 
-	for( int i = 0; i < 100; i++ )
+	while( !dcpu_complete( &dcpu ) )
 	{
 		dcpu_tick( &dcpu );
 		reg_debug( &dcpu );

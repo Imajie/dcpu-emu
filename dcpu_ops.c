@@ -11,6 +11,9 @@
 #include "dcpu_ops.h"
 #include "hardware_device.h"
 
+/* only IFx instructions have an opcode starting with a 1 */
+#define IF_MASK 0x10
+
 /* forward declarations */
 int dcpu_special( dcpu16_t *dcpu, dcpu_inst_t inst);
 int dcpu_set( dcpu16_t *dcpu, dcpu_inst_t inst );
@@ -233,10 +236,14 @@ dcpu_reg_t get( dcpu16_t *dcpu, dcpu_reg_t val, int type )
 
 		/* POP/PUSH */
 	    case 0x18:
-			if( type == A_TYPE )
-				return dcpu->memory[dcpu->SP++];
-			else
-				return dcpu->memory[--dcpu->SP];
+			// don't effect SP when skipping
+			if( dcpu->state != SKIPPING ) {
+				if( type == A_TYPE )
+					return dcpu->memory[dcpu->SP++];
+				else
+					return dcpu->memory[--dcpu->SP];
+			}
+			return 0;
 
 		/* PEEK */
 		case 0x19: return dcpu->memory[dcpu->SP];
@@ -281,6 +288,19 @@ int dcpu_do_inst( dcpu16_t *dcpu )
 
 	printf("Instruction: o=0x%04x\ta=0x%04x\tb=0x%04x\n", inst.o, inst.a, inst.b );
 
+	if( dcpu->state == SKIPPING )
+	{
+		// we are skipping, make sure any next_words get read
+		dcpu_reg_t a;
+		a = get_b( dcpu, inst.b );
+		a = get_a( dcpu, inst.a );
+
+		// stop skipping if not another IF
+		if( !(inst.o & IF_MASK) )
+			dcpu->state = NORMAL;
+			
+		return 0;
+	}
 	return dcpu_ops[inst.o]( dcpu, inst );
 }
 
@@ -331,10 +351,10 @@ int dcpu_sub( dcpu16_t *dcpu, dcpu_inst_t inst )
 		dcpu->EX = 0x0000;
 	}
 
-	/* check for SUB PC, 1 as 2 bytes */
-	if( inst.b == 0x1c && a == 1 && inst.a != 0x22 )
+	/* check for SUB PC, 1 */
+	if( inst.b == 0x1c && a == 1 )
 	{	
-		dcpu->PC--;
+		dcpu->state = HALTING;
 	}
 	return 2;
 }
