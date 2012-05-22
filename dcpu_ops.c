@@ -9,6 +9,7 @@
 #include "dcpu.h"
 #include "dcpu_types.h"
 #include "dcpu_ops.h"
+#include "hardware_device.h"
 
 /* forward declarations */
 int dcpu_special( dcpu16_t *dcpu, dcpu_inst_t inst);
@@ -613,17 +614,43 @@ int dcpu_iaq( dcpu16_t *dcpu, dcpu_inst_t inst )
 
 int dcpu_hwn( dcpu16_t *dcpu, dcpu_inst_t inst )
 {
-	// TODO
+	set( dcpu, inst.a, dcpu->hardware_count );
 	return 2;
 }
 int dcpu_hwq( dcpu16_t *dcpu, dcpu_inst_t inst )
 {
-	// TODO
+	dcpu_reg_t a;
+	a = get_a( dcpu, inst.a );
+
+	if( a < dcpu->hardware_count )
+	{
+		dcpu->A = dcpu->hardware[a]->hw_id & 0xFFFF;
+		dcpu->B = (dcpu->hardware[a]->hw_id >> 16) & 0xFFFF;
+
+		dcpu->C = dcpu->hardware[a]->hw_ver & 0xFFFF;
+		
+		dcpu->X = dcpu->hardware[a]->man_id & 0xFFFF;
+		dcpu->X = (dcpu->hardware[a]->man_id >> 16) & 0xFFFF;
+	}
+	else
+	{
+		fprintf( stderr, "HWQ: invalid hardware number 0x%04x\n", a);
+	}
 	return 4;
 }
 int dcpu_hwi( dcpu16_t *dcpu, dcpu_inst_t inst )
 {
-	// TODO
+	dcpu_reg_t a;
+	a = get_a( dcpu, inst.a );
+
+	if( a < dcpu->hardware_count )
+	{
+		dcpu->hardware[a]->interrupt( dcpu, dcpu->hardware[a] );
+	}
+	else
+	{
+		fprintf( stderr, "HWI: invalid hardware number 0x%04x\n", a);
+	}
 	return 4;
 }
 

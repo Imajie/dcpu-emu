@@ -8,6 +8,7 @@
 
 #include "dcpu.h"
 #include "dcpu_types.h"
+#include "hardware/LEM1802.h"
 
 
 uint16_t mem[0x10000];
@@ -59,12 +60,17 @@ int main( int argc, char ** argv )
 
 	dcpu_create( &dcpu, mem );
 
+	dcpu_add_hardware( &dcpu, create_LEM1802( 5 ) );
+
 	for( int i = 0; i < 100; i++ )
 	{
 		dcpu_tick( &dcpu );
 		reg_debug( &dcpu );
 	}
 
+	printf("Run complete press enter to exit...");
+	getchar();
+	
 	dcpu_free( &dcpu );
 	
 	return 0;

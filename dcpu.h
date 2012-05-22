@@ -9,6 +9,11 @@
 
 #include <stdint.h>
 
+struct dcpu_hardware;
+typedef struct dcpu_hardware dcpu_hardware_t;
+
+#define MAX_HARDWARE 0xFFFF
+
 /* memory is 16 bit words */
 typedef uint16_t* dcpu_ram_t;
 typedef uint16_t  dcpu_reg_t;
@@ -20,7 +25,7 @@ typedef enum {
 } dcpu_state_t;
 
 /* cpu registers */
-typedef struct {
+typedef struct dcpu {
 	/* Registers */
 	uint16_t A, B, C, X, Y, Z, I, J;
 	/* program counter */
@@ -35,6 +40,10 @@ typedef struct {
 	/* memory */
 	dcpu_ram_t memory;
 
+	/* hardware */
+	dcpu_hardware_t **hardware;
+	unsigned int hardware_count;
+
 	/* extra stuff */
 	unsigned long clocks;
 	dcpu_state_t state;
@@ -46,6 +55,13 @@ typedef struct {
  * Create a new dcpu16 with the specified program memory
  */
 void dcpu_create( dcpu16_t *dcpu, dcpu_ram_t prog );
+
+/*
+ * dcpu_add_hardware
+ *
+ * Attach the provided hardware device to the DCPU
+ */
+int dcpu_add_hardware( dcpu16_t *dcpu, dcpu_hardware_t *hardware );
 
 /*
  * dcpu_free

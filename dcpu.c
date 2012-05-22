@@ -7,6 +7,8 @@
 #include "dcpu.h"
 #include "dcpu_types.h"
 #include "dcpu_ops.h"
+#include "hardware_device.h"
+#include <stdlib.h>
 
 /*
  * dcpu_create
@@ -37,7 +39,31 @@ void dcpu_create( dcpu16_t *dcpu, dcpu_ram_t prog )
 
 	dcpu->memory = prog;
 
+	dcpu->hardware = NULL;
+	dcpu->hardware_count = 0;
+
 	return;
+}
+
+/*
+ * dcpu_add_hardware
+ *
+ * Attach the provided hardware device to the DCPU
+ */
+int dcpu_add_hardware( dcpu16_t *dcpu, dcpu_hardware_t *hardware )
+{
+	if( dcpu->hardware_count >= MAX_HARDWARE )
+		return -1;
+
+	void *temp = realloc(dcpu->hardware, (dcpu->hardware_count+1)*sizeof(dcpu_hardware_t*));
+	if( !temp )
+		return -1;
+
+	dcpu->hardware = temp;
+	dcpu->hardware_count++;
+
+	dcpu->hardware[dcpu->hardware_count-1] = hardware;
+	return 0;
 }
 
 /*
@@ -59,5 +85,10 @@ void dcpu_free( dcpu16_t *dcpu )
 void dcpu_tick( dcpu16_t *dcpu )
 {
 	dcpu->clocks += dcpu_do_inst( dcpu );
+
+	for( int i = 0; i < dcpu->hardware_count; i++ )
+	{
+		dcpu->hardware[i]->tick(dcpu, dcpu->hardware[i]);
+	}
 }
 
