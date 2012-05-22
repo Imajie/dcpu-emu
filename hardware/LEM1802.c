@@ -20,7 +20,7 @@
 
 /* number of characters in each dimension */
 #define X_RES			32
-#define Y_RES			16
+#define Y_RES			12
 
 /* character size */
 #define CHAR_WIDTH		4
@@ -88,12 +88,15 @@ void tick_LEM1802( dcpu16_t* dcpu, dcpu_hardware_t *hardware )
 					{
 						for( int i = 0; i < monitor->monitor_scale; i++ )
 						{
-							for( int j = 0; j < monitor->monitor_scale; i++ )
+							for( int j = 0; j < monitor->monitor_scale; j++ )
 							{
-								if( ch.cols[cy] & (1<<(7-cx)) )
-									sdl_draw_screen( monitor->screen, x+cx+i, y+cy+j, PALLET_TO_RGB(fg) );
+								int x_i, y_i;
+								x_i = x*CHAR_WIDTH*monitor->monitor_scale+cx*monitor->monitor_scale+i;
+								y_i = y*CHAR_HEIGHT*monitor->monitor_scale+cy*monitor->monitor_scale+j;
+								if( ch.cols[cx] & (1<<cy) )
+									sdl_draw_screen( monitor->screen, x_i, y_i, PALLET_TO_RGB(fg) );
 								else
-									sdl_draw_screen( monitor->screen, x+cx+i, y+cy+j, PALLET_TO_RGB(bg) );
+									sdl_draw_screen( monitor->screen, x_i, y_i, PALLET_TO_RGB(bg) );
 							}
 						}
 					}
@@ -101,7 +104,7 @@ void tick_LEM1802( dcpu16_t* dcpu, dcpu_hardware_t *hardware )
 			}
 		}
 	}
-
+	SDL_Flip( monitor->screen );
 	sdl_handle_events( monitor->screen );
 }
 
@@ -120,13 +123,13 @@ void interrupt_LEM1802( dcpu16_t* dcpu, dcpu_hardware_t *hardware )
 	switch(a)
 	{
 		case MEM_MAP_SCREEN:
-			monitor->display = (display_t*)b;
+			monitor->display = (display_t*)(&dcpu->memory[b]);
 			break;
 		case MEM_MAP_FONT:
-			monitor->font = (font_t*)b;
+			monitor->font = (font_t*)(&dcpu->memory[b]);
 			break;
 		case MEM_MAP_PALLET:
-			monitor->pallet = (pallet_t*)b;
+			monitor->pallet = (pallet_t*)(&dcpu->memory[b]);
 			break;
 		case SET_BORDER_COLOR:
 			monitor->border = dcpu->B & 0xF;

@@ -5,6 +5,8 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
+#include <signal.h>
+#include <unistd.h>
 
 #include "dcpu.h"
 #include "dcpu_types.h"
@@ -12,6 +14,12 @@
 
 
 uint16_t mem[0x10000];
+
+int killed = 0;
+void _kill( int x )
+{
+	killed = 1;
+}
 
 void read_prog( FILE *file )
 {
@@ -30,8 +38,8 @@ void reg_debug( dcpu16_t *dcpu )
 			dcpu->A, dcpu->B, dcpu->C, dcpu->X, dcpu->Y, dcpu->Z, dcpu->I, dcpu->J);
 
 	/* state/extra */
-	fprintf( stdout, "PC=0x%04x SP=0x%04x EX=0x%04x IA=0x%04x clocks=%i\n",
-			dcpu->PC, dcpu->SP, dcpu->EX, dcpu->IA, dcpu->clocks);
+	fprintf( stdout, "PC=0x%04x SP=0x%04x EX=0x%04x IA=0x%04x clocks=%i\tstate=%s\n",
+			dcpu->PC, dcpu->SP, dcpu->EX, dcpu->IA, dcpu->clocks, state_strs[dcpu->state]);
 
 	fprintf( stdout, "\n" );
 }
@@ -62,10 +70,15 @@ int main( int argc, char ** argv )
 
 	dcpu_add_hardware( &dcpu, create_LEM1802( 5 ) );
 
-	while( !dcpu_complete( &dcpu ) )
+	signal( SIGKILL, _kill );
+	signal( SIGTERM, _kill );
+	signal( SIGINT, _kill );
+
+	while( !dcpu_complete( &dcpu ) && !killed )
 	{
 		dcpu_tick( &dcpu );
 		reg_debug( &dcpu );
+		//usleep( 1000000 );
 	}
 
 	printf("Run complete press enter to exit...");

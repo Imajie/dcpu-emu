@@ -10,6 +10,11 @@
 #include "hardware_device.h"
 #include <stdlib.h>
 
+const char *state_strs[] = 
+{
+	"NORMAL", "SKIPPING", "HALTING"
+};
+
 /*
  * dcpu_create
  *

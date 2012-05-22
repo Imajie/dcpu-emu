@@ -24,6 +24,8 @@ typedef enum {
 	NORMAL, SKIPPING, HALTING
 } dcpu_state_t;
 
+extern const char *state_strs[];
+
 /* cpu registers */
 typedef struct dcpu {
 	/* Registers */

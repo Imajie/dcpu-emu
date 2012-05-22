@@ -650,7 +650,7 @@ int dcpu_hwq( dcpu16_t *dcpu, dcpu_inst_t inst )
 		dcpu->C = dcpu->hardware[a]->hw_ver & 0xFFFF;
 		
 		dcpu->X = dcpu->hardware[a]->man_id & 0xFFFF;
-		dcpu->X = (dcpu->hardware[a]->man_id >> 16) & 0xFFFF;
+		dcpu->Y = (dcpu->hardware[a]->man_id >> 16) & 0xFFFF;
 	}
 	else
 	{

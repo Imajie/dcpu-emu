@@ -15,8 +15,8 @@ typedef union {
 	struct {
 		uint16_t c : 7;
 		uint16_t blink : 1;
-		uint16_t fg : 4;
 		uint16_t bg : 4;
+		uint16_t fg : 4;
 	};
 } display_t;
 
@@ -40,7 +40,7 @@ typedef union {
 
 /* internal montior state */
 typedef struct {
-	/* pointer to character ram */
+	/* addr of character ram */
 	display_t *display;
 
 	/* pointer to font ram */
