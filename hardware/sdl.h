@@ -11,6 +11,8 @@
 #define BPP 4
 #define DEPTH 32
 
+extern int sdl_killed;
+
 /*
  * sdl_init
  *
@@ -30,6 +32,6 @@ void sdl_draw_screen(SDL_Surface* screen, int x, int y, uint8_t r, uint8_t g, ui
  *
  * Handle SDL events
  */
-int sdl_handle_events( SDL_Surface *screen );
+int sdl_handle_events(void);
 
 #endif

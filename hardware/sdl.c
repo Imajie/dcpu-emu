@@ -8,6 +8,8 @@
 #include <SDL.h>
 #include "sdl.h"
 
+int sdl_killed = 0;
+
 /*
  * sdl_init
  *
@@ -68,7 +70,7 @@ void sdl_draw_screen(SDL_Surface* screen, int x, int y, uint8_t r, uint8_t g, ui
  *
  * Handle SDL events
  */
-int sdl_handle_events( SDL_Surface *screen )
+int sdl_handle_events(void)
 {
 	int quit = 0;
 	SDL_Event event;
@@ -78,14 +80,17 @@ int sdl_handle_events( SDL_Surface *screen )
 		{
 			case SDL_QUIT:
 				quit = 1;
+				sdl_killed = 1;
 				break;
 			case SDL_KEYDOWN:
+				if( event.key.keysym.sym == SDLK_ESCAPE )
+				{
+					sdl_killed = 1;
+				}
 				// TODO
 				break;
 		}
 	}
 	return quit;
-
-	SDL_Flip(screen);
 }
 

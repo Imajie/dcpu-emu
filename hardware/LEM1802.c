@@ -34,6 +34,30 @@
 #define MEM_DUMP_FONT		4
 #define MEM_DUMP_PALLET		5
 
+/* internal montior state */
+typedef struct {
+	/* addr of character ram */
+	display_t *display;
+
+	/* copy of display ram */
+	display_t d_copy[X_RES*Y_RES];
+
+	/* pointer to font ram */
+	font_t *font;
+
+	/* pointer to pallet ram */
+	pallet_t *pallet;
+
+	/* monitor scale */
+	unsigned int monitor_scale;
+
+	/* SDL surface */
+	SDL_Surface *screen;
+
+	/* border color */
+	char border;
+
+} LEM1802_t;
 
 /* 
  * Default FONT and PALLET
@@ -69,6 +93,7 @@ LEM1802_t* init_LEM1802( unsigned int monitor_scale)
 void tick_LEM1802( dcpu16_t* dcpu, dcpu_hardware_t *hardware )
 {
 	LEM1802_t *monitor = (void*)hardware->device_data;
+	int update = 0;
 	
 	// update the screen
 	if( monitor->display )
@@ -77,6 +102,14 @@ void tick_LEM1802( dcpu16_t* dcpu, dcpu_hardware_t *hardware )
 		{
 			for( int y = 0; y < Y_RES; y++ )
 			{
+				// don't draw if we don't need to
+				if( monitor->d_copy[x+X_RES*y].all == monitor->display[x+X_RES*y].all )
+					continue;
+
+				// new character
+				monitor->d_copy[x+X_RES*y].all = monitor->display[x+X_RES*y].all;
+				update = 1;
+				
 				// get the properties of this character
 				font_t ch = monitor->font[monitor->display[x+X_RES*y].c];
 				pallet_t fg = monitor->pallet[monitor->display[x+X_RES*y].fg];
@@ -104,8 +137,8 @@ void tick_LEM1802( dcpu16_t* dcpu, dcpu_hardware_t *hardware )
 			}
 		}
 	}
-	SDL_Flip( monitor->screen );
-	sdl_handle_events( monitor->screen );
+	if( update )
+		SDL_Flip( monitor->screen );
 }
 
 /*

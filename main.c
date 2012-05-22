@@ -7,9 +7,11 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <unistd.h>
+#include <poll.h>
 
 #include "dcpu.h"
 #include "dcpu_types.h"
+#include "hardware/sdl.h"
 #include "hardware/LEM1802.h"
 
 
@@ -74,15 +76,23 @@ int main( int argc, char ** argv )
 	signal( SIGTERM, _kill );
 	signal( SIGINT, _kill );
 
-	while( !dcpu_complete( &dcpu ) && !killed )
+	while( !dcpu_complete( &dcpu ) && !killed && !sdl_killed )
 	{
 		dcpu_tick( &dcpu );
+		sdl_handle_events();
 		reg_debug( &dcpu );
 		//usleep( 1000000 );
 	}
 
-	printf("Run complete press enter to exit...");
-	getchar();
+	struct pollfd pollinfo[1];
+	pollinfo[0].fd = 0;
+	pollinfo[0].events = POLLIN;
+
+	printf("Run complete press enter to exit..."); fflush(stdout);
+	while( !killed && !sdl_killed && !poll( pollinfo, 1, 0 ) )
+	{
+		sdl_handle_events();
+	}
 	
 	dcpu_free( &dcpu );
 	

@@ -38,27 +38,6 @@ typedef union {
 #define _4_to_8(a)	(((a)<<4) | (a))
 #define PALLET_TO_RGB(x) _4_to_8((x).r), _4_to_8((x).g), _4_to_8((x).b)
 
-/* internal montior state */
-typedef struct {
-	/* addr of character ram */
-	display_t *display;
-
-	/* pointer to font ram */
-	font_t *font;
-
-	/* pointer to pallet ram */
-	pallet_t *pallet;
-
-	/* monitor scale */
-	unsigned int monitor_scale;
-
-	/* SDL surface */
-	SDL_Surface *screen;
-
-	/* border color */
-	char border;
-
-} LEM1802_t;
 
 /*
  * create_LEM1802
