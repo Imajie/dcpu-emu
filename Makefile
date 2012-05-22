@@ -87,8 +87,9 @@ clean:
 ./main.o: /usr/include/SDL/SDL_mouse.h /usr/include/SDL/SDL_video.h
 ./main.o: /usr/include/SDL/SDL_joystick.h /usr/include/SDL/SDL_quit.h
 ./main.o: /usr/include/SDL/SDL_loadso.h /usr/include/SDL/SDL_timer.h
-./main.o: /usr/include/SDL/SDL_version.h hardware/LEM1802.h hardware_device.h
-./main.o: hardware/sdl.h
+./main.o: /usr/include/SDL/SDL_version.h hardware/generic_keyboard.h
+./main.o: hardware_device.h hardware/LEM1802.h hardware/sdl.h
+./main.o: hardware/generic_keyboard.h hardware/generic_clock.h dcpu.h
 hardware/LEM1802.o: hardware_device.h /usr/include/stdint.h
 hardware/LEM1802.o: /usr/include/features.h /usr/include/sys/cdefs.h
 hardware/LEM1802.o: /usr/include/bits/wordsize.h /usr/include/gnu/stubs.h
@@ -115,6 +116,29 @@ hardware/LEM1802_builtin.o: /usr/include/bits/wordsize.h
 hardware/LEM1802_builtin.o: /usr/include/gnu/stubs.h
 hardware/LEM1802_builtin.o: /usr/include/gnu/stubs-64.h
 hardware/LEM1802_builtin.o: /usr/include/bits/wchar.h dcpu.h hardware/sdl.h
+hardware/generic_clock.o: /usr/include/stdlib.h /usr/include/features.h
+hardware/generic_clock.o: /usr/include/sys/cdefs.h
+hardware/generic_clock.o: /usr/include/bits/wordsize.h
+hardware/generic_clock.o: /usr/include/gnu/stubs.h
+hardware/generic_clock.o: /usr/include/gnu/stubs-64.h
+hardware/generic_clock.o: /usr/include/bits/waitflags.h
+hardware/generic_clock.o: /usr/include/bits/waitstatus.h
+hardware/generic_clock.o: /usr/include/endian.h /usr/include/bits/endian.h
+hardware/generic_clock.o: /usr/include/bits/byteswap.h /usr/include/xlocale.h
+hardware/generic_clock.o: /usr/include/sys/types.h /usr/include/bits/types.h
+hardware/generic_clock.o: /usr/include/bits/typesizes.h /usr/include/time.h
+hardware/generic_clock.o: /usr/include/sys/select.h
+hardware/generic_clock.o: /usr/include/bits/select.h
+hardware/generic_clock.o: /usr/include/bits/sigset.h /usr/include/bits/time.h
+hardware/generic_clock.o: /usr/include/sys/sysmacros.h
+hardware/generic_clock.o: /usr/include/bits/pthreadtypes.h
+hardware/generic_clock.o: /usr/include/alloca.h /usr/include/stdio.h
+hardware/generic_clock.o: /usr/include/libio.h /usr/include/_G_config.h
+hardware/generic_clock.o: /usr/include/wchar.h /usr/include/bits/wchar.h
+hardware/generic_clock.o: /usr/include/bits/stdio_lim.h
+hardware/generic_clock.o: /usr/include/bits/sys_errlist.h
+hardware/generic_clock.o: hardware/generic_clock.h dcpu.h hardware_device.h
+hardware/generic_clock.o: /usr/include/stdint.h dcpu.h
 hardware/generic_keyboard.o: /usr/include/stdlib.h /usr/include/features.h
 hardware/generic_keyboard.o: /usr/include/sys/cdefs.h
 hardware/generic_keyboard.o: /usr/include/bits/wordsize.h
@@ -133,10 +157,10 @@ hardware/generic_keyboard.o: /usr/include/bits/sigset.h
 hardware/generic_keyboard.o: /usr/include/bits/time.h
 hardware/generic_keyboard.o: /usr/include/sys/sysmacros.h
 hardware/generic_keyboard.o: /usr/include/bits/pthreadtypes.h
-hardware/generic_keyboard.o: /usr/include/alloca.h dcpu.h
+hardware/generic_keyboard.o: /usr/include/alloca.h dcpu.h hardware_device.h
 hardware/generic_keyboard.o: /usr/include/stdint.h /usr/include/bits/wchar.h
-hardware/generic_keyboard.o: hardware_device.h dcpu.h
-hardware/generic_keyboard.o: hardware/generic_keyboard.h hardware/sdl.h
+hardware/generic_keyboard.o: dcpu.h hardware/generic_keyboard.h
+hardware/generic_keyboard.o: hardware/sdl.h
 hardware/sdl.o: /usr/include/stdio.h /usr/include/features.h
 hardware/sdl.o: /usr/include/sys/cdefs.h /usr/include/bits/wordsize.h
 hardware/sdl.o: /usr/include/gnu/stubs.h /usr/include/gnu/stubs-64.h

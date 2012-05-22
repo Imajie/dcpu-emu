@@ -136,7 +136,6 @@ void event_callback_Keyboard( keyboard_t *keyboard, uint16_t keysym, uint8_t sta
 
 		keyboard->key_states[to_add] = state;
 	}
-	printf("Keyboard: got 0x%04x\n", to_add );
 }
 
 /*

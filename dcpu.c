@@ -25,6 +25,9 @@ void dcpu_create( dcpu16_t *dcpu, dcpu_ram_t prog )
 	dcpu->state = NORMAL;
 	dcpu->clocks = 0;
 
+	// 100KHz
+	dcpu->frequency = 100000;
+
 	// everything starts out zero'd
 	dcpu->A = 0;
 	dcpu->B = 0;
@@ -94,10 +97,13 @@ void dcpu_free( dcpu16_t *dcpu )
  *
  * Execute a clock tick
  */
-void dcpu_tick( dcpu16_t *dcpu )
+int dcpu_tick( dcpu16_t *dcpu )
 {
+	int elapsed = 0;
 	if( dcpu->state != HALTING )
-		dcpu->clocks += dcpu_do_inst( dcpu );
+		elapsed = dcpu_do_inst( dcpu );
+
+	dcpu->clocks += elapsed;
 
 	for( int i = 0; i < dcpu->hardware_count; i++ )
 	{

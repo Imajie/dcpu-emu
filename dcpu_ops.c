@@ -302,7 +302,6 @@ void dcpu_interrupt( dcpu16_t *dcpu, dcpu_reg_t msg )
 		// A  <- msg
 		dcpu->PC = dcpu->IA;
 		dcpu->A  = msg;
-		printf("dcpu: Entering interrupt msg= %i\n", msg );
 	}
 	else
 	{

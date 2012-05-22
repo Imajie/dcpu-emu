@@ -49,6 +49,7 @@ typedef struct dcpu {
 	/* extra stuff */
 	unsigned long clocks;
 	dcpu_state_t state;
+	unsigned long frequency;
 
 	// interrupts
 	void (*interrupt)(struct dcpu *dcpu, dcpu_reg_t msg);
@@ -85,7 +86,7 @@ void dcpu_free( dcpu16_t *dcpu );
  *
  * Execute a clock tick
  */
-void dcpu_tick( dcpu16_t *dcpu );
+int dcpu_tick( dcpu16_t *dcpu );
 
 /*
  * dcpu_complete

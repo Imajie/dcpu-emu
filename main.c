@@ -8,12 +8,14 @@
 #include <signal.h>
 #include <unistd.h>
 #include <poll.h>
+#include <sys/time.h>
 
 #include "dcpu.h"
 #include "dcpu_types.h"
 #include "hardware/sdl.h"
 #include "hardware/LEM1802.h"
-
+#include "hardware/generic_keyboard.h"
+#include "hardware/generic_clock.h"
 
 uint16_t mem[0x10000];
 
@@ -72,17 +74,29 @@ int main( int argc, char ** argv )
 
 	dcpu_add_hardware( &dcpu, create_LEM1802( 5 ) );
 	dcpu_add_hardware( &dcpu, create_Keyboard( ) );
+	dcpu_add_hardware( &dcpu, create_Clock( ) );
 
 	signal( SIGKILL, _kill );
 	signal( SIGTERM, _kill );
 	signal( SIGINT, _kill );
 
+	struct timeval start, end;
 	while( !dcpu_complete( &dcpu ) && !killed && !sdl_killed )
 	{
-		dcpu_tick( &dcpu );
+		gettimeofday( &start, NULL );
+		int ticks = dcpu_tick( &dcpu );
 		sdl_handle_events();
 		//reg_debug( &dcpu );
-		//usleep( 1000000 );
+		
+		gettimeofday( &end, NULL );
+		int elapsed = (end.tv_sec - start.tv_sec)*1000000 + (end.tv_usec - start.tv_usec);
+
+		int to_sleep = 10*ticks - elapsed;
+
+		if( to_sleep > 0 )
+		{
+			usleep( to_sleep );
+		}
 	}
 
 	struct pollfd pollinfo[1];
